@@ -139,6 +139,7 @@ export interface User {
   fullName: string;
   email: string;
   mobileNumber: string; // e.g. +91 9876543210
+  password?: string;
   role: UserRole;
   classLevel: string; // e.g. "10th", "11th", "12th", "9th", or "Faculty"
   section: string; // "A", "B", "C", "D"
@@ -195,7 +196,14 @@ export interface Announcement {
 }
 
 export type ActivityStatus = 'UPCOMING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-export type ActivityCategory = 'SPORTS' | 'CULTURAL' | 'ACADEMIC' | 'COMMUNITY' | 'MEETING';
+export type ActivityCategory = 
+  | 'COMPETITION' 
+  | 'SPORTS' 
+  | 'CULTURAL' 
+  | 'MEETING' 
+  | 'EVENT' 
+  | 'ACADEMIC' 
+  | 'COMMUNITY';
 
 export interface HouseActivity {
   id: string;
@@ -241,7 +249,7 @@ export interface HouseNotification {
   type: NotificationType;
   timestamp: string;
   isRead: boolean;
-  actionTab?: 'home' | 'attendance' | 'chat' | 'calls' | 'me';
+  actionTab?: 'home' | 'attendance' | 'chat' | 'activities' | 'calls' | 'me';
 }
 
 export interface HouseStatistics {

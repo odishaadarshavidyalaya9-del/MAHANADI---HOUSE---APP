@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHouse } from '../../context/HouseContext';
 import { UserRole } from '../../types/house';
 import { MahanadiLogo } from '../MahanadiLogo';
-import { X, ShieldCheck, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle2, AlertCircle, RefreshCw, Lock, Eye, EyeOff } from 'lucide-react';
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -25,10 +25,13 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     dob: '2010-05-15',
     mobileNumber: '',
     email: '',
+    password: '',
     role: 'MEMBER' as UserRole,
     bloodGroup: 'B+',
     motto: '',
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   // Math Captcha
   const [captchaNum1, setCaptchaNum1] = useState(7);
@@ -81,6 +84,11 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
       return;
     }
 
+    if (!formData.password || formData.password.length < 4) {
+      setError('Please create a secure password (minimum 4 characters).');
+      return;
+    }
+
     // Captcha validation
     if (parseInt(captchaInput.trim(), 10) !== captchaNum1 + captchaNum2) {
       setError('Captcha calculation is incorrect. Please try again.');
@@ -99,6 +107,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
       fullName: formData.fullName.trim(),
       email: formData.email.trim(),
       mobileNumber: formattedMobile,
+      password: formData.password,
       role: formData.role,
       classLevel: formData.role === 'HOUSE_TEACHER' ? 'Faculty' : formData.classLevel,
       section: formData.role === 'HOUSE_TEACHER' ? 'Staff' : formData.section,
@@ -366,6 +375,31 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none dark:text-white"
                 />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Set Account Password <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative flex items-center">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    placeholder="Minimum 4 characters"
+                    value={formData.password}
+                    onChange={e => setFormData({ ...formData, password: e.target.value })}
+                    className="w-full pl-10 pr-10 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none dark:text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               {/* Security Captcha */}

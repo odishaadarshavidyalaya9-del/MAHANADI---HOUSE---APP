@@ -177,51 +177,71 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         </div>
       </div>
 
-      {/* Metrics Row: Total Members & Today's Attendance */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Metrics Row: Total Members, Present Today & Upcoming Activities */}
+      <div className="grid grid-cols-3 gap-2">
         {/* Total Members */}
         <div 
           onClick={onOpenMembers}
-          className="cursor-pointer bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all group"
+          className="cursor-pointer bg-white dark:bg-slate-800/90 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all group"
         >
-          <div className="flex items-center justify-between mb-2">
-            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-              <Users className="w-4 h-4" />
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+              <Users className="w-3.5 h-3.5" />
             </div>
-            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 dark:text-white leading-none">
+          <p className="text-xl font-black text-slate-900 dark:text-white leading-none">
             {users.length}
           </p>
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1 truncate">
             Total Members
           </p>
-          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-1 flex items-center gap-1">
-            <span>Class 9 to 12</span> • All active
+          <p className="text-[9px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5 truncate">
+            All active
           </p>
         </div>
 
-        {/* Today's Attendance */}
+        {/* Present Today */}
         <div 
           onClick={() => onNavigateTab('attendance')}
-          className="cursor-pointer bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all group"
+          className="cursor-pointer bg-white dark:bg-slate-800/90 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all group"
         >
-          <div className="flex items-center justify-between mb-2">
-            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
-              <CalendarCheck className="w-4 h-4" />
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="p-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+              <CalendarCheck className="w-3.5 h-3.5" />
             </div>
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300">
+            <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300">
               {attendanceRate}%
             </span>
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 dark:text-white leading-none">
-            {presentTodayCount}<span className="text-sm font-semibold text-slate-400">/{totalApprovedMembers}</span>
+          <p className="text-xl font-black text-slate-900 dark:text-white leading-none">
+            {presentTodayCount}
           </p>
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-            Today's Attendance
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1 truncate">
+            Present Today
           </p>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
-            {todayAttendance ? 'Verified by House Master' : 'In Progress'}
+          <p className="text-[9px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+            of {totalApprovedMembers} students
+          </p>
+        </div>
+
+        {/* Upcoming Activities */}
+        <div 
+          onClick={onOpenActivities}
+          className="cursor-pointer bg-white dark:bg-slate-800/90 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all group"
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="p-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
+              <Compass className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <p className="text-xl font-black text-slate-900 dark:text-white leading-none">
+            {activities.filter(a => a.status === 'UPCOMING' || a.status === 'IN_PROGRESS').length}
+          </p>
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1 truncate">
+            Upcoming Events
+          </p>
+          <p className="text-[9px] text-amber-600 dark:text-amber-400 font-medium mt-0.5 truncate">
+            Sports & Drills
           </p>
         </div>
       </div>

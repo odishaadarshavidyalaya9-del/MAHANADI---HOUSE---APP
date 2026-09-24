@@ -11,6 +11,7 @@ import { LoginScreen } from './components/Auth/LoginScreen';
 import { HomeDashboard } from './components/Home/HomeDashboard';
 import { AttendanceView } from './components/Attendance/AttendanceView';
 import { ChatView } from './components/Chat/ChatView';
+import { ActivitiesView } from './components/Activities/ActivitiesView';
 import { ProfileView } from './components/Profile/ProfileView';
 import { AnnouncementsModal } from './components/Announcements/AnnouncementsModal';
 import { ActivitiesModal } from './components/Activities/ActivitiesModal';
@@ -20,7 +21,7 @@ import { NotificationDrawer } from './components/Common/NotificationDrawer';
 import { MahanadiLogo } from './components/MahanadiLogo';
 
 const MainAppContent: React.FC = () => {
-  const { currentUser, unreadNotificationsCount, chatMessages } = useHouse();
+  const { currentUser, unreadNotificationsCount, chatMessages, activities } = useHouse();
 
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
@@ -83,7 +84,7 @@ const MainAppContent: React.FC = () => {
           {activeTab === 'home' && (
             <HomeDashboard
               onNavigateTab={setActiveTab}
-              onOpenActivities={() => setActivitiesOpen(true)}
+              onOpenActivities={() => setActiveTab('activities')}
               onOpenMembers={() => setMembersOpen(true)}
               onOpenAnnouncements={() => setAnnouncementsOpen(true)}
               onOpenCalls={() => setCallsOpen(true)}
@@ -98,10 +99,14 @@ const MainAppContent: React.FC = () => {
             <ChatView />
           )}
 
+          {activeTab === 'activities' && (
+            <ActivitiesView />
+          )}
+
           {activeTab === 'calls' && (
             <HomeDashboard
               onNavigateTab={setActiveTab}
-              onOpenActivities={() => setActivitiesOpen(true)}
+              onOpenActivities={() => setActiveTab('activities')}
               onOpenMembers={() => setMembersOpen(true)}
               onOpenAnnouncements={() => setAnnouncementsOpen(true)}
               onOpenCalls={() => setCallsOpen(true)}
@@ -113,7 +118,7 @@ const MainAppContent: React.FC = () => {
           )}
         </main>
 
-        {/* Fixed Bottom Navigation (Home | Attendance | Chat | Me) */}
+        {/* Fixed Bottom Navigation (Home | Attendance | Chat | Activities | Me) */}
         <BottomNav
           activeTab={activeTab === 'calls' ? 'home' : activeTab}
           onSelectTab={(tab) => {
@@ -124,6 +129,7 @@ const MainAppContent: React.FC = () => {
             }
           }}
           unreadChatCount={unreadChatCount}
+          upcomingActivitiesCount={activities.filter(a => a.status === 'UPCOMING' || a.status === 'IN_PROGRESS').length}
         />
 
         {/* Modals & Overlays */}

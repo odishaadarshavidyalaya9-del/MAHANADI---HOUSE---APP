@@ -68,6 +68,8 @@ interface HouseContextType {
     pointsAwarded: number;
     maxParticipants?: number;
   }) => { success: boolean; error?: string };
+  updateActivity: (activityId: string, data: Partial<HouseActivity>) => { success: boolean; error?: string };
+  deleteActivity: (activityId: string) => { success: boolean; error?: string };
   joinActivity: (activityId: string) => { success: boolean; error?: string };
   leaveActivity: (activityId: string) => void;
   
@@ -517,6 +519,24 @@ export const HouseProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return { success: true };
   };
 
+  const updateActivity = (activityId: string, data: Partial<HouseActivity>) => {
+    if (!currentUser) return { success: false, error: 'Must be logged in' };
+    if (currentUser.role === 'MEMBER') {
+      return { success: false, error: 'Only House Teachers and Captains can modify activities.' };
+    }
+    setActivities(prev => prev.map(act => act.id === activityId ? { ...act, ...data } : act));
+    return { success: true };
+  };
+
+  const deleteActivity = (activityId: string) => {
+    if (!currentUser) return { success: false, error: 'Must be logged in' };
+    if (currentUser.role === 'MEMBER') {
+      return { success: false, error: 'Only House Teachers and Captains can delete activities.' };
+    }
+    setActivities(prev => prev.filter(act => act.id !== activityId));
+    return { success: true };
+  };
+
   const joinActivity = (activityId: string) => {
     if (!currentUser) return { success: false, error: 'Must be logged in' };
     
@@ -655,6 +675,8 @@ export const HouseProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         addAnnouncement,
         toggleLikeAnnouncement,
         addActivity,
+        updateActivity,
+        deleteActivity,
         joinActivity,
         leaveActivity,
         sendMessage,

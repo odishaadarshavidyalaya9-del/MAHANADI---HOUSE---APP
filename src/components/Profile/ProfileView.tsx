@@ -152,35 +152,35 @@ export const ProfileView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Calendar className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-            <span>Joined: {currentUser.joinedDate}</span>
+            <Calendar className="w-3.5 h-3.5 text-sky-500 flex-shrink-0" />
+            <span>DOB: <strong>{currentUser.dob}</strong></span>
           </div>
         </div>
       </div>
 
-      {/* Attendance Stats Card for Members */}
-      {currentUser.role === 'MEMBER' && (
-        <div className="bg-gradient-to-r from-blue-900 to-sky-900 text-white p-4 rounded-2xl shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-sky-200">
-              Personal Attendance Record
-            </p>
-            <p className="text-xl font-extrabold mt-0.5">
-              {attendanceStats.percentage}% <span className="text-xs font-normal text-sky-300">Present</span>
-            </p>
-            <p className="text-[11px] text-sky-200 mt-0.5">
-              Attended {attendanceStats.presentDays} of {attendanceStats.totalDays} recorded sessions
-            </p>
-          </div>
-
-          <div className="p-3 bg-white/10 rounded-2xl text-center">
-            <CheckCircle2 className="w-7 h-7 text-emerald-400 mx-auto" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 block mt-1">
-              Compliant
-            </span>
-          </div>
+      {/* Attendance Stats Card */}
+      <div className="bg-gradient-to-r from-blue-900 to-sky-900 text-white p-4 rounded-2xl shadow-sm flex items-center justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-sky-200">
+            {currentUser.role === 'HOUSE_TEACHER' ? 'House Attendance Overview' : 'Personal Attendance Summary'}
+          </p>
+          <p className="text-xl font-extrabold mt-0.5">
+            {attendanceStats.percentage}% <span className="text-xs font-normal text-sky-300">Present</span>
+          </p>
+          <p className="text-[11px] text-sky-200 mt-0.5">
+            {currentUser.role === 'HOUSE_TEACHER' 
+              ? 'Average roll-call compliance across all active house grades'
+              : `Attended ${attendanceStats.presentDays} of ${attendanceStats.totalDays} recorded sessions`}
+          </p>
         </div>
-      )}
+
+        <div className="p-3 bg-white/10 rounded-2xl text-center">
+          <CheckCircle2 className="w-7 h-7 text-emerald-400 mx-auto" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 block mt-1">
+            {attendanceStats.percentage >= 75 ? 'Good Standing' : 'Needs Attention'}
+          </span>
+        </div>
+      </div>
 
       {/* Account Settings Menu */}
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-700/70 overflow-hidden shadow-sm">

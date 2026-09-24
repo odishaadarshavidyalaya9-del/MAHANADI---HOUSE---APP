@@ -32,6 +32,7 @@ export const AttendanceView: React.FC = () => {
   const [selectedClassFilter, setSelectedClassFilter] = useState('ALL');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const canEditAttendance = currentUser?.role === 'CAPTAIN' || currentUser?.role === 'HOUSE_TEACHER';
 
@@ -150,8 +151,18 @@ export const AttendanceView: React.FC = () => {
             </div>
           </div>
 
-          {/* Role badge */}
+          {/* Actions & Role badge */}
           <div className="flex items-center gap-1.5 text-xs">
+            <button
+              type="button"
+              id="btn-attendance-history"
+              onClick={() => setHistoryOpen(true)}
+              className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1 text-[11px] border border-blue-200 dark:border-blue-900 transition-colors"
+            >
+              <History className="w-3 h-3 text-blue-600" />
+              <span>History</span>
+            </button>
+
             {canEditAttendance ? (
               <span className="px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-bold flex items-center gap-1 text-[10px]">
                 <UserCheck className="w-3 h-3" /> Roll Taker
@@ -418,6 +429,108 @@ export const AttendanceView: React.FC = () => {
           })}
         </div>
       </div>
+
+      {/* Attendance History Modal */}
+      {historyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[85vh]">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-sky-900 px-4 py-3 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <History className="w-5 h-5 text-amber-400" />
+                <div>
+                  <h3 className="text-sm font-bold">Attendance History</h3>
+                  <p className="text-[10px] text-sky-200">
+                    {canEditAttendance ? 'Past Date Logs & Verification' : `Record for ${currentUser?.fullName}`}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setHistoryOpen(false)}
+                className="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/10"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* History List */}
+            <div className="p-4 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 space-y-3">
+              {Object.keys(attendanceMap).length === 0 ? (
+                <div className="py-8 text-center text-slate-400 text-xs">
+                  No previous attendance records found.
+                </div>
+              ) : (
+                Object.values(attendanceMap)
+                  .sort((a, b) => b.date.localeCompare(a.date))
+                  .map(record => {
+                    const totalMembers = Object.keys(record.records).length;
+                    const presentNum = Object.values(record.records).filter(r => r.present).length;
+                    const absentNum = totalMembers - presentNum;
+                    const pct = totalMembers > 0 ? Math.round((presentNum / totalMembers) * 100) : 0;
+                    const myRecord = currentUser ? record.records[currentUser.id] : null;
+
+                    return (
+                      <div key={record.id} className="pt-3 first:pt-0">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                              <CalendarIcon className="w-3.5 h-3.5 text-blue-600" />
+                              {record.date}
+                            </span>
+                            <p className="text-[10px] text-slate-400 mt-0.5">
+                              Verified by: {record.lastUpdatedByName} ({record.lastUpdatedRole})
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              setSelectedDate(record.date);
+                              setHistoryOpen(false);
+                            }}
+                            className="px-2.5 py-1 text-[11px] font-bold bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-300 rounded-lg transition-colors"
+                          >
+                            View Day
+                          </button>
+                        </div>
+
+                        {/* Stats or Personal status */}
+                        <div className="mt-2 flex items-center justify-between text-[11px] bg-slate-50 dark:bg-slate-800/60 p-2 rounded-xl">
+                          <div className="flex items-center gap-2">
+                            <span className="text-emerald-600 font-bold">Present: {presentNum}</span>
+                            <span className="text-slate-300 dark:text-slate-600">•</span>
+                            <span className="text-rose-600 font-bold">Absent: {absentNum}</span>
+                            <span className="text-slate-300 dark:text-slate-600">•</span>
+                            <span className="text-blue-600 font-bold">{pct}%</span>
+                          </div>
+
+                          {myRecord && (
+                            <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                              myRecord.present 
+                                ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300' 
+                                : 'bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300'
+                            }`}>
+                              You: {myRecord.present ? 'Present' : 'Absent'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-800 text-right">
+              <button
+                onClick={() => setHistoryOpen(false)}
+                className="px-4 py-1.5 text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300"
+              >
+                Close History
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
